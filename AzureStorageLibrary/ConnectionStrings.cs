@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AzureStorageLibrary
 {
-    static class ConnectionStrigs
+    public static class ConnectionStrings
     {
         public static string AzureConnectionString { get; set; }
     }

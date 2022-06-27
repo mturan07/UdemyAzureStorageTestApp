@@ -1,12 +1,5 @@
-﻿//using Azure.Data.Tables;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Table;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.Azure.Cosmos.Table;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AzureStorageLibrary.Services
 {
@@ -17,7 +10,7 @@ namespace AzureStorageLibrary.Services
 
         public TableStorage()
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConnectionStrigs.AzureConnectionString);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConnectionStrings.AzureConnectionString);
             _cloudTableClient = storageAccount.CreateCloudTableClient();
             _cloudTable = _cloudTableClient.GetTableReference(typeof(TEntity).Name);
             _cloudTable.CreateIfNotExistsAsync().Wait();
@@ -30,29 +23,35 @@ namespace AzureStorageLibrary.Services
             return (TEntity)action.Result;
         }
 
-        public Task Delete(string rowKey, string partitionKey)
+        public async Task Delete(string rowKey, string partitionKey)
         {
-            throw new NotImplementedException();
+            var entity = await Get(rowKey, partitionKey);
+            var tableOperation = TableOperation.Delete(entity);
+            await _cloudTable.ExecuteAsync(tableOperation);
         }
 
-        public Task<TEntity> Get(string rowKey, string partitionKey)
+        public async Task<TEntity> Get(string rowKey, string partitionKey)
         {
-            throw new NotImplementedException();
+            var tableOperation = TableOperation.Retrieve<TEntity>(partitionKey, rowKey);
+            var execute = await _cloudTable.ExecuteAsync(tableOperation);
+            return (TEntity)execute.Result;
         }
 
         public IQueryable<TEntity> GetAll()
         {
-            return _cloudTable.CreateQuery<TEntity>().AsQueriable();
+            return _cloudTable.CreateQuery<TEntity>().AsQueryable();
         }
 
         public IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> query)
         {
-            throw new NotImplementedException();
+            return _cloudTable.CreateQuery<TEntity>().Where(query);
         }
 
-        public Task<TEntity> Update(TEntity entity)
+        public async Task<TEntity> Update(TEntity entity)
         {
-            throw new NotImplementedException();
+            var tableOperation = TableOperation.Replace(entity);
+            var execute = await _cloudTable.ExecuteAsync(tableOperation);
+            return (TEntity)execute.Result;
         }
     }
 }

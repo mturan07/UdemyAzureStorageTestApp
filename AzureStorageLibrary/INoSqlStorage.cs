@@ -2,13 +2,13 @@
 
 namespace AzureStorageLibrary
 {
-    public interface INoSqlStorage<ITableEntity>
+    public interface INoSqlStorage<TableEntity>
     {
-        Task<ITableEntity> Add(ITableEntity entity);
-        Task<ITableEntity> Get(string rowKey, string partitionKey);
+        Task<TableEntity> Add(TableEntity entity);
+        Task<TableEntity> Get(string rowKey, string partitionKey);
         Task Delete(string rowKey, string partitionKey);
-        Task<ITableEntity> Update(ITableEntity entity);
-        IQueryable<ITableEntity> GetAll();
-        IQueryable<ITableEntity> Query(Expression<Func<ITableEntity, bool>> query);
+        Task<TableEntity> Update(TableEntity entity);
+        IQueryable<TableEntity> GetAll();
+        IQueryable<TableEntity> Query(Expression<Func<TableEntity, bool>> query);
     }
 }
