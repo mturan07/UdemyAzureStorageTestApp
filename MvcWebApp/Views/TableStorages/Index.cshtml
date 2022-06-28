@@ -2,14 +2,31 @@
 
 <h2>Add Product</h2>
 
-<form class="form-inline" asp-action="Create" method="post" enctype="application/x-www-form-urlencoded">
+<form class="form-inline" asp-action="@(ViewBag.IsUpdate ? "Update" : "Create")" method="post" enctype="application/x-www-form-urlencoded">
+    <div class="row">
+        <div class="col-3">
+            <input class="form-control mr-1" asp-for="Name" placeholder="Ürün ismi" />
+        </div>
+        <div class="col-3">
+            <input class="form-control mr-1" asp-for="Price" placeholder="Ürün fiyatı" />
+        </div>
+        <div class="col-2">
+            <input class="form-control mr-1" asp-for="Stock" placeholder="Ürün stoğu" />
+        </div>
+        <div class="col-2">
+            <input class="form-control mr-1" asp-for="Color" placeholder="Ürün rengi" />
+        </div>
 
-    <input class="form-control mr-1" asp-for="Name" placeholder="Ürün ismi" />
-    <input class="form-control mr-1" asp-for="Price" placeholder="Ürün fiyatı" />
-    <input class="form-control mr-1" asp-for="Stock" placeholder="Ürün stoğu" />
-    <input class="form-control mr-1" asp-for="Color" placeholder="Ürün rengi" />
+        <div>
+            <input type="hidden" asp-for="RowKey" />
+            <input type="hidden" asp-for="PartitionKey" />
+        </div>
 
-    <input class="btn btn-primary" type="submit" value="Ürün Kaydet" />
+        <div class="col-2">
+            <input class="btn btn-primary" type="submit" value="@(ViewBag.IsUpdate ? "Ürün Güncelle" : "Ürün Kaydet")" />
+        </div>
+    </div>
+
 </form>
 
 <h2>Products</h2>
