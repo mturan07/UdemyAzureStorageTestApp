@@ -66,7 +66,18 @@ namespace AzureStorageLibrary.Services
 
             await appendBlobClient.CreateIfNotExistsAsync();
 
+            using (MemoryStream ms = new())
+            {
+                using (StreamWriter sw = new(ms))
+                {
+                    sw.Write($"{DateTime.Now}:{text}/n");
 
+                    sw.Flush();
+                    ms.Position = 0;
+
+                    await appendBlobClient.AppendBlockAsync(ms);
+                }
+            }
         }
 
         public async Task UploadAsync(Stream fileStream, string fileName, EContainerName eContainerName)
