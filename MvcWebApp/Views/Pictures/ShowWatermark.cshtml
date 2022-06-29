@@ -1,0 +1,11 @@
+﻿@using AzureStorageLibrary.Models
+
+<div id="images">
+    @if (ViewBag.fileBlobs != null)
+    {
+        @foreach (FileBlob item in ViewBag.fileBlobs)
+        {
+            <img style="width:200px;" data-name="@item.Name" src="@item.Url"/>
+        }        
+    }
+</div>

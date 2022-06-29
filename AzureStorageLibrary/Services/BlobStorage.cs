@@ -6,12 +6,13 @@ namespace AzureStorageLibrary.Services
     public class BlobStorage : IBlobStorage
     {
         private readonly BlobServiceClient _blobServiceClient;
+
         public BlobStorage()
         {
             _blobServiceClient = new BlobServiceClient(ConnectionStrings.AzureConnectionString);
         }
 
-        public string BlobURL { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string BlobURL => "http://127.0.0.1:10000/devstoreaccount1/pictures";
 
         public async Task DeleteAsync(string fileName, EContainerName eContainerName)
         {
@@ -34,7 +35,10 @@ namespace AzureStorageLibrary.Services
         {
             List<string> logs = new();
 
-            var containerClient = _blobServiceClient.GetBlobContainerClient(EContainerName.Logs.ToString());
+            var containerClient = _blobServiceClient.GetBlobContainerClient(EContainerName.logs.ToString());
+
+            await containerClient.CreateIfNotExistsAsync();
+
             var appendBlobClient = containerClient.GetAppendBlobClient(fileName);
 
             await appendBlobClient.CreateIfNotExistsAsync();
@@ -54,14 +58,21 @@ namespace AzureStorageLibrary.Services
             return logs;
         }
 
-        public Task<List<string>> GetNamesAsync(EContainerName eContainerName)
+        public List<string> GetNames(EContainerName eContainerName)
         {
-            throw new NotImplementedException();
+            List<string> blobNames = new();
+
+            var containerClient = _blobServiceClient.GetBlobContainerClient(eContainerName.ToString());
+            var blobs = containerClient.GetBlobs();
+            blobs.ToList().ForEach(
+                x => blobNames.Add(x.Name));
+            return blobNames;
         }
 
         public async Task SetLogAsync(string text, string fileName)
         {
-            var containerClient = _blobServiceClient.GetBlobContainerClient(EContainerName.Logs.ToString());
+            var containerClient = _blobServiceClient.GetBlobContainerClient(EContainerName.logs.ToString());
+
             var appendBlobClient = containerClient.GetAppendBlobClient(fileName);
 
             await appendBlobClient.CreateIfNotExistsAsync();
@@ -70,7 +81,7 @@ namespace AzureStorageLibrary.Services
             {
                 using (StreamWriter sw = new(ms))
                 {
-                    sw.Write($"{DateTime.Now}:{text}/n");
+                    sw.Write($"{DateTime.Now}:{text}\n");
 
                     sw.Flush();
                     ms.Position = 0;
@@ -88,7 +99,7 @@ namespace AzureStorageLibrary.Services
             await containerClient.SetAccessPolicyAsync(Azure.Storage.Blobs.Models.PublicAccessType.BlobContainer);
             
             var blobClient = containerClient.GetBlobClient(fileName);
-            await blobClient.UploadAsync(fileName);
+            await blobClient.UploadAsync(fileStream, true);
         }
     }
 }

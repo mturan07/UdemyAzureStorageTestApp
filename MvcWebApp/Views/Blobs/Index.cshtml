@@ -1,0 +1,48 @@
+﻿@using AzureStorageLibrary.Models
+@{
+    ViewData["Title"] = "Pictures";
+}
+
+<h2>Save Picture</h2>
+
+<form asp-action="Upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="picture" />
+    <button class="btn btn-primary" type="submit">Save</button>
+</form>
+
+<h2>Logs</h2>
+
+@foreach (string item in ViewBag.logs)
+{
+    <div>@item</div>
+}
+
+<h2>Pictures</h2>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Picture</th>
+        <th>Name</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.blobs != null)
+        {
+            @foreach (FileBlob item in ViewBag.blobs)
+            {
+                <tr>
+                    <td> 
+                        <img src="@item.Url" class="img-thumbnail" style="width:100px" />
+                    </td>
+                    <td>@item.Name</td>
+                    <td>
+                        <a class="btn btn-warning" asp-action="Download" asp-route-fileName="@item.Name">Download</a>
+                        <a class="btn btn-danger" asp-action="Delete" asp-route-fileName="@item.Name">Delete</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
